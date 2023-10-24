@@ -1,0 +1,109 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <nav class="nav d-xxl-none" style="background-color: #005B41">
+        <a class="nav-link active d-none d-lg-block" aria-current="page" href="{% url 'home' %}">Inicio</a>
+        <a class="nav-link d-none d-lg-block" href="admin/">Administración</a>
+    </nav>
+    <br>
+    <div class="row d-xxl-none">
+        <!--Filtro y cards respectivas-->
+        <form method="get" action="{% url 'home' %}">
+            <select class="form-select" name="filtroentidades" onchange="this.form.submit()">
+            <option value="Todos" {% if entidadselec == 'Todos' %}selected{% endif %}>Todos</option>
+            {% for entidad in entidades %}
+                <option value="{{ entidad.nombre }}" {% if entidadselec == entidad.nombre %}selected{% endif %}>
+                {{ entidad.nombre }}
+                </option>
+            {% endfor %}
+            </select>
+        </form>
+    </div>    
+    <br>
+    <div class="row d-xxl-none">
+        {% if entidadselec == 'Todos' or entidadselec == None %}
+            {% for comunicado in ordenado %}
+                {% if comunicado.visible == True %}
+                    <div class="col-lg-4 col-xs-12 p-2" style="align-items: center;">
+                        <div class="card h-200 border-light mb-1" style="max-width: 25rem;  background-color: transparent;">
+                            {% if comunicado.tipo == "S" %}
+                                <div class="card-header" style="color: white; background-color: #008170;">{{ comunicado.titulo }} | Suspensión de actividades</div>
+                            
+                            {% elif comunicado.tipo == "C" %} 
+                                <div class="card-header" style="color: white; background-color: #005B41;">{{ comunicado.titulo }} | Suspensión de clases</div> 
+                                
+                            {% else %}    
+                                <div class="card-header" style="color: white; background-color: #232D3F;">{{ comunicado.titulo }} | Información</div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h6 class="card-title" style="color: white; ">{{ comunicado.entidad }}</h6>
+                                <h4 class="card-text" style="color: white;">{{ comunicado.detalle_corto }}</h4>
+                                <details style="color: white; font-size:larger;">
+                                    {{ comunicado.detalle }}
+                                </details>
+                                <p class="card-text" style="color: white;">Publicado por: <cite title="Source Title">{{ comunicado.publicado_por }}</cite></p>
+                            </div>
+                        </div>
+                    </div>  
+                {% endif %}           
+            {% endfor %} 
+        {% else %}
+            {% for comunicado in comunicados %}       
+                {% if strcomunicado.entidad == strentidadselec %}
+                    {% if comunicado.visible == True %}    
+                        <div class="col-xs-12 col-sm-12 col-md-4 p-2">
+                            <div class="card h-200 border-light mb-1" style="max-width: 18rem; background-color: transparent;">
+                            {% if comunicado.tipo == "S" %}
+                                <div class="card-header" style="color: white; background-color: #008170;">{{ comunicado.titulo }} | Suspensión de actividades</div>
+                            
+                            {% elif comunicado.tipo == "C" %} 
+                                <div class="card-header" style="color: white; background-color: #005B41;">{{ comunicado.titulo }} | Suspensión de clases</div> 
+                                
+                            {% else %}    
+                                <div class="card-header" style="color: white; background-color: #232D3F;">{{ comunicado.titulo }} | Información</div>
+                            {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title" style="color: white;">{{ comunicado.entidad }}</h6>
+                                    <h4 class="card-text" style="color: white;">{{ comunicado.detalle_corto }}</h4>
+                                    <details style="color: white; font-size:larger;">
+                                        {{ comunicado.detalle }}
+                                    </details>
+                                    <p class="card-text" style="color: white;">Publicado por: <cite title="Source Title">{{ comunicado.publicado_por }}</cite></p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}    
+                {% endif %}          
+            {% endfor %}        
+        {% endif %}     
+    </div>    
+
+
+
+
+    <!--Vista Pantalla, disponible solo en pantallas XXL-->
+<div id="CarruselComunicados" class="row  d-none d-xxl-block p-5" style="max-width: 100%;">
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+            <div class="row carousel-inner">
+                {% for comunicado in ordenado %}
+                    {% if comunicado.visible == True %}
+                        <div class="carousel-item{% if forloop.first %} active {% endif %}" data-bs-interval="7000">
+                            <div class="card h-100 d-inline-block" style="width: 100%;">
+                                <div class="card-body row">
+                                    <h1 class="card-title">{{comunicado.titulo}} <img src="{{comunicado.entidad.logo.url}}" class="img-fluid" style="height: 64px; width: 64px; align-items: end;" alt="logoentidad"></h1>
+                                    <h3 class="card-subtitle mb-2 text-body-secondary">{{comunicado.entidad}}</h3>
+                                    <p class="card-text">{{comunicado.detalle}}</p>
+                                    <p class="card-text">Fecha publicación: {{comunicado.fecha_publicacion}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                </button>
+            </div>
+</div>
+
+{% endblock %}
